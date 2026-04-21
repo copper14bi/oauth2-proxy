@@ -38,6 +38,9 @@ type Options struct {
 	// if a cookie is ever compromised.
 	// Note: CookieRefresh is set to 1h so tokens are refreshed proactively before
 	// expiry, avoiding unexpected logouts during active sessions.
+	// Note: CookieSameSite defaults to "lax" here instead of upstream's empty string,
+	// which provides reasonable CSRF protection while still allowing top-level
+	// navigation redirects (e.g. OAuth2 redirects back to the app).
 	CookieName     string        `flag:"cookie-name" cfg:"cookie_name" env:"OAUTH2_PROXY_COOKIE_NAME"`
 	CookieSecret   string        `flag:"cookie-secret" cfg:"cookie_secret" env:"OAUTH2_PROXY_COOKIE_SECRET"`
 	CookieDomains  []string      `flag:"cookie-domain" cfg:"cookie_domains" env:"OAUTH2_PROXY_COOKIE_DOMAINS"`
@@ -49,8 +52,4 @@ type Options struct {
 	CookieSameSite string        `flag:"cookie-samesite" cfg:"cookie_samesite" env:"OAUTH2_PROXY_COOKIE_SAMESITE"`
 
 	// Session options
-	SessionStoreType string `flag:"session-store-type" cfg:"session_store_type" env:"OAUTH2_PROXY_SESSION_STORE_TYPE"`
-
-	// Email / access control
-	EmailDomains      []string `flag:"email-domain" cfg:"email_domains" env:"OAUTH2_PROXY_EMAIL_DOMAINS"`
-	AllowedGroups     [
+	SessionStoreType string `flag:"session-store-type" cfg:"session_store_type" env:"O
