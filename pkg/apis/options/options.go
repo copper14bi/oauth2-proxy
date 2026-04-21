@@ -33,8 +33,11 @@ type Options struct {
 	ValidateURL string `flag:"validate-url" cfg:"validate_url" env:"OAUTH2_PROXY_VALIDATE_URL"`
 
 	// Cookie options
-	// Note: increased default CookieExpire to 12h (from upstream default of 168h) to
-	// reduce session lifetime for better security in my personal deployment.
+	// Note: CookieExpire is set to 12h (reduced from upstream default of 168h) for
+	// better security in my personal deployment - shorter sessions limit exposure
+	// if a cookie is ever compromised.
+	// Note: CookieRefresh is set to 1h so tokens are refreshed proactively before
+	// expiry, avoiding unexpected logouts during active sessions.
 	CookieName     string        `flag:"cookie-name" cfg:"cookie_name" env:"OAUTH2_PROXY_COOKIE_NAME"`
 	CookieSecret   string        `flag:"cookie-secret" cfg:"cookie_secret" env:"OAUTH2_PROXY_COOKIE_SECRET"`
 	CookieDomains  []string      `flag:"cookie-domain" cfg:"cookie_domains" env:"OAUTH2_PROXY_COOKIE_DOMAINS"`
@@ -50,5 +53,4 @@ type Options struct {
 
 	// Email / access control
 	EmailDomains      []string `flag:"email-domain" cfg:"email_domains" env:"OAUTH2_PROXY_EMAIL_DOMAINS"`
-	AllowedGroups     []string `flag:"allowed-group" cfg:"allowed_groups" env:"OAUTH2_PROXY_ALLOWED_GROUPS"`
-	HtpasswdFile      string   `flag:"htpasswd-file" cfg:"htpasswd_file" env:"OAUTH2_PROXY_HTPASSWD_FILE"`
+	AllowedGroups     [
