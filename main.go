@@ -42,9 +42,16 @@ func main() {
 	// Load configuration from file if provided.
 	// Falls back to looking for oauth2-proxy.cfg in the current directory
 	// if no --config flag is passed, which is handy during local development.
+	// Also check $HOME/.config/oauth2-proxy/oauth2-proxy.cfg as a secondary
+	// fallback, useful when running without root on a personal machine.
 	if *config == "" {
 		if _, err := os.Stat("oauth2-proxy.cfg"); err == nil {
 			*config = "oauth2-proxy.cfg"
+		} else if home, err := os.UserHomeDir(); err == nil {
+			candidate := home + "/.config/oauth2-proxy/oauth2-proxy.cfg"
+			if _, err := os.Stat(candidate); err == nil {
+				*config = candidate
+			}
 		}
 	}
 
