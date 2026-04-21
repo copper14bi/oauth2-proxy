@@ -39,7 +39,15 @@ func main() {
 		return
 	}
 
-	// Load configuration from file if provided
+	// Load configuration from file if provided.
+	// Falls back to looking for oauth2-proxy.cfg in the current directory
+	// if no --config flag is passed, which is handy during local development.
+	if *config == "" {
+		if _, err := os.Stat("oauth2-proxy.cfg"); err == nil {
+			*config = "oauth2-proxy.cfg"
+		}
+	}
+
 	if *config != "" {
 		if err := options.LoadConfig(*config, opts); err != nil {
 			log.Fatalf("ERROR: failed to load config file %s: %v", *config, err)
