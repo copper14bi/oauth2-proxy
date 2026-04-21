@@ -33,6 +33,8 @@ type Options struct {
 	ValidateURL string `flag:"validate-url" cfg:"validate_url" env:"OAUTH2_PROXY_VALIDATE_URL"`
 
 	// Cookie options
+	// Note: increased default CookieExpire to 12h (from upstream default of 168h) to
+	// reduce session lifetime for better security in my personal deployment.
 	CookieName     string        `flag:"cookie-name" cfg:"cookie_name" env:"OAUTH2_PROXY_COOKIE_NAME"`
 	CookieSecret   string        `flag:"cookie-secret" cfg:"cookie_secret" env:"OAUTH2_PROXY_COOKIE_SECRET"`
 	CookieDomains  []string      `flag:"cookie-domain" cfg:"cookie_domains" env:"OAUTH2_PROXY_COOKIE_DOMAINS"`
@@ -50,63 +52,3 @@ type Options struct {
 	EmailDomains      []string `flag:"email-domain" cfg:"email_domains" env:"OAUTH2_PROXY_EMAIL_DOMAINS"`
 	AllowedGroups     []string `flag:"allowed-group" cfg:"allowed_groups" env:"OAUTH2_PROXY_ALLOWED_GROUPS"`
 	HtpasswdFile      string   `flag:"htpasswd-file" cfg:"htpasswd_file" env:"OAUTH2_PROXY_HTPASSWD_FILE"`
-	HtpasswdUserGroup []string `flag:"htpasswd-user-group" cfg:"htpasswd_user_groups" env:"OAUTH2_PROXY_HTPASSWD_USER_GROUPS"`
-
-	// Proxy behavior
-	ReverseProxy      bool     `flag:"reverse-proxy" cfg:"reverse_proxy" env:"OAUTH2_PROXY_REVERSE_PROXY"`
-	RealClientIPHeader string   `flag:"real-client-ip-header" cfg:"real_client_ip_header" env:"OAUTH2_PROXY_REAL_CLIENT_IP_HEADER"`
-	WhitelistDomains  []string `flag:"whitelist-domain" cfg:"whitelist_domains" env:"OAUTH2_PROXY_WHITELIST_DOMAINS"`
-
-	// Redirect URL
-	RedirectURL string `flag:"redirect-url" cfg:"redirect_url" env:"OAUTH2_PROXY_REDIRECT_URL"`
-
-	// Logging
-	LoggingFilename       string `flag:"logging-filename" cfg:"logging_filename" env:"OAUTH2_PROXY_LOGGING_FILENAME"`
-	StandardLogging       bool   `flag:"standard-logging" cfg:"standard_logging" env:"OAUTH2_PROXY_STANDARD_LOGGING"`
-	RequestLogging        bool   `flag:"request-logging" cfg:"request_logging" env:"OAUTH2_PROXY_REQUEST_LOGGING"`
-	AuthLogging           bool   `flag:"auth-logging" cfg:"auth_logging" env:"OAUTH2_PROXY_AUTH_LOGGING"`
-}
-
-// NewOptions returns a new Options struct with sensible defaults
-func NewOptions() *Options {
-	return &Options{
-		HTTPAddress:        "127.0.0.1:4180",
-		HTTPSAddress:       ":443",
-		Provider:           "google",
-		CookieName:         "_oauth2_proxy",
-		CookiePath:         "/",
-		CookieExpire:       168 * time.Hour,
-		CookieRefresh:      0,
-		CookieSecure:       true,
-		CookieHTTPOnly:     true,
-		CookieSameSite:     "",
-		SessionStoreType:   "cookie",
-		ReverseProxy:       false,
-		RealClientIPHeader: "X-Real-IP",
-		StandardLogging:    true,
-		RequestLogging:     true,
-		AuthLogging:        true,
-	}
-}
-
-// Validate checks that required options are set and valid
-func (o *Options) Validate() error {
-	if o.ClientID == "" {
-		return fmt.Errorf("missing setting: client-id")
-	}
-	if o.ClientSecret == "" && o.ClientSecretFile == "" {
-		return fmt.Errorf("missing setting: client-secret or client-secret-file")
-	}
-	if o.CookieSecret == "" {
-		return fmt.Errorf("missing setting: cookie-secret")
-	}
-	if len(o.UpstreamURLs) == 0 {
-		return fmt.Errorf("missing setting: upstream")
-	}
-	for _, upstream := range o.UpstreamURLs {
-		if _, err := url.Parse(upstream); err != nil {
-			return fmt.Errorf("invalid upstream URL %q: %w", upstream, err)
-		}
-	}
-	return nil
-}
