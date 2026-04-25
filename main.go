@@ -56,6 +56,7 @@ func main() {
 	}
 
 	if *config != "" {
+		log.Printf("INFO: loading config from %s", *config)
 		if err := options.LoadConfig(*config, opts); err != nil {
 			log.Fatalf("ERROR: failed to load config file %s: %v", *config, err)
 		}
