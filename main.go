@@ -60,6 +60,10 @@ func main() {
 		if err := options.LoadConfig(*config, opts); err != nil {
 			log.Fatalf("ERROR: failed to load config file %s: %v", *config, err)
 		}
+	} else {
+		// No config file found anywhere; log a notice so it's obvious during
+		// local dev runs that we're relying entirely on flags/env vars.
+		log.Printf("INFO: no config file found, using flags and environment variables only")
 	}
 
 	// Validate the options
